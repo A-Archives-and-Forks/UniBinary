@@ -13,7 +13,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-int display_usage() {
+int display_usage(void) {
     printf("Usage: unibinary [-ed] [-sf] [-b num] [-h]\n");
     printf("\n");
     printf("UniBinary encodes and decodes data into printable Unicode characters.\n");

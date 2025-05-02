@@ -70,7 +70,7 @@ int compareFiles(const char* filename1, const char* filename2) {
     return files_are_equal ? 0 : -1;
 }
 
-void testRepeats() {
+void testRepeats(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -105,7 +105,7 @@ void testRepeats() {
     }
 }
 
-void test_7_7_to_12() {
+void test_7_7_to_12(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -124,7 +124,7 @@ void test_7_7_to_12() {
     }
 }
 
-void test_8_8_8_to_12_12() {
+void test_8_8_8_to_12_12(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -142,7 +142,7 @@ void test_8_8_8_to_12_12() {
     assert(u1 == 0xDEF);
 }
 
-void test_ascii_encoding() {
+void test_ascii_encoding(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -177,7 +177,7 @@ void test_ascii_encoding() {
     fclose(fd_in3);
 }
 
-void test_encode_3_bytes() {
+void test_encode_3_bytes(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -217,7 +217,7 @@ void test_encode_3_bytes() {
     fclose(fd_in3);
 }
 
-void test_encode_5_bytes() {
+void test_encode_5_bytes(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -263,7 +263,7 @@ void test_encode_5_bytes() {
     fclose(fd_in3);
 }
 
-void test_unichr_12_encoding_decoding() {
+void test_unichr_12_encoding_decoding(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -282,7 +282,7 @@ void test_unichr_12_encoding_decoding() {
     }
 }
 
-void test_is_in_U8b() {
+void test_is_in_U8b(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -294,7 +294,7 @@ void test_is_in_U8b() {
     assert(!is_in_U08b(0x0500));
 }
 
-void test_decode_unichars() {
+void test_decode_unichars(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -334,7 +334,7 @@ void test_decode_unichars() {
     fclose(fd_out2);
 }
 
-void test_encode_decode_file() {
+void test_encode_decode_file(void) {
     
     printf("== %s ==\n", __func__);
 
@@ -375,7 +375,7 @@ void test_encode_decode_file() {
     assert(error == 0);
 }
 
-void test_repeats_2() {
+void test_repeats_2(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -419,7 +419,7 @@ void test_repeats_2() {
     fclose(fd_in3);
 }
 
-void test_one_char() {
+void test_one_char(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -451,7 +451,7 @@ void test_one_char() {
     fclose(fd_in3);
 }
 
-void test_empty_string() {
+void test_empty_string(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -478,7 +478,7 @@ void test_empty_string() {
     fclose(fd_in3);
 }
 
-void test_two_unichr_to_repeat_byte_ntimes() {
+void test_two_unichr_to_repeat_byte_ntimes(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -490,7 +490,7 @@ void test_two_unichr_to_repeat_byte_ntimes() {
     assert(u1 == 0x4E0A);
 }
 
-void test_big_repeats_2000_minus_2() {
+void test_big_repeats_2000_minus_2(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -529,7 +529,7 @@ void test_big_repeats_2000_minus_2() {
     fclose(fd_in3);
 }
 
-void test_big_repeats_2000() {
+void test_big_repeats_2000(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -570,7 +570,7 @@ void test_big_repeats_2000() {
     fclose(fd_in3);
 }
 
-void test_encode_macho_header() {
+void test_encode_macho_header(void) {
     
     FILE *fd_in = fopen("/tmp/test_encode_macho_header_src", "wb+");
     //    const char* s = "\xCF\xFA\xED\xFE\x07\x00\x00\x01";
@@ -610,7 +610,7 @@ void test_encode_macho_header() {
     fclose(fd_in3);
 }
 
-void test_decode_bytes_from_string_4_ascii() {
+void test_decode_bytes_from_string_4_ascii(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -647,7 +647,7 @@ void test_decode_bytes_from_string_4_ascii() {
     fclose(fd_out3);
 }
 
-void test_3_bytes_from_unichar() {
+void test_3_bytes_from_unichar(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -663,7 +663,7 @@ void test_3_bytes_from_unichar() {
     assert(b2 == 0xEF);
 }
 
-void test_repeat() {
+void test_repeat(void) {
     
     printf("== %s ==\n", __func__);
     
@@ -696,7 +696,7 @@ void test_repeat() {
     fclose(fd_in3);
 }
 
-void test_string_encoding() {
+void test_string_encoding(void) {
     printf("== %s ==\n", __func__);
 
     wchar_t *wcs;
@@ -706,7 +706,7 @@ void test_string_encoding() {
     free(wcs);
 }
 
-void test_string_decoding() {
+void test_string_decoding(void) {
     printf("== %s ==\n", __func__);
 
     char* data;
@@ -717,7 +717,7 @@ void test_string_decoding() {
     free(data);
 }
 
-void test_string_decoding_with_newline() {
+void test_string_decoding_with_newline(void) {
     printf("== %s ==\n", __func__);
     
     char* data;

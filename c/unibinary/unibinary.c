@@ -78,10 +78,10 @@ int unichr_12a_from_two_ascii(unsigned char c0, unsigned char c1, wchar_t *u0) {
     } else if (c0 < 64 && c1 >= 64) {
         c1 -= 64;
         unicode_start = U12a_0_1_start;
-    } else if (c0 >= 64 & c1 < 64) {
+    } else if (c0 >= 64 && c1 < 64) {
         c0 -= 64;
         unicode_start = U12a_1_0_start;
-    } else if (c0 >= 64 & c1 >= 64) {
+    } else if (c0 >= 64 && c1 >= 64) {
         c0 -= 64;
         c1 -= 64;
         unicode_start = U12a_1_1_start;
@@ -328,7 +328,7 @@ int bytes_from_u1_u2(wchar_t u1, wchar_t u2, uint8_t **buffer, size_t *bufferSiz
             return EXIT_FAILURE;
         }
         
-        *buffer[0] = b0;
+        (*buffer)[0] = b0;
         return EXIT_SUCCESS;
     }
     
@@ -509,6 +509,7 @@ int unibinary_encode_string(const char *src, wchar_t **dst, size_t wrap_length) 
     size_t length = mbstowcs(*dst, map, file_size * MB_CUR_MAX);
 
     if(length == -1) {
+        free(dst);
         return EXIT_FAILURE;
     }
     
