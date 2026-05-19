@@ -118,17 +118,17 @@ int to_U08(uint8_t i, wchar_t *o) {
 }
 
 int to_U12(wchar_t i, wchar_t *o) {
-    
-    if(i > (U12b_start + U12b_length)) return EXIT_FAILURE;
-    
+
+    if(i >= U12b_length) return EXIT_FAILURE;
+
     *o = U12b_start + i;
     
     return EXIT_SUCCESS;
 }
 
 int from_U12b(wchar_t i, wchar_t *o) {
-    
-    if(i < U12b_start || i > (U12b_start + U12b_length)) return EXIT_FAILURE;
+
+    if(i < U12b_start || i >= (U12b_start + U12b_length)) return EXIT_FAILURE;
     
     *o = i - U12b_start;
     
@@ -169,7 +169,7 @@ int U12a_to_8_8(wchar_t u, uint8_t *b0, uint8_t *b1) {
 }
 
 int int_from_u08b(wchar_t u, uint8_t* i) {
-    if(u < U8_start || u > (U8_start + U8_length)) return EXIT_FAILURE;
+    if(u < U8_start || u >= (U8_start + U8_length)) return EXIT_FAILURE;
     
     *i = u - U8_start;
     
@@ -177,7 +177,7 @@ int int_from_u08b(wchar_t u, uint8_t* i) {
 }
 
 int int_from_u12b(wchar_t u, wchar_t* i) {
-    if(u < U12b_start || u > (U12b_start + U12b_length)) return EXIT_FAILURE;
+    if(u < U12b_start || u >= (U12b_start + U12b_length)) return EXIT_FAILURE;
     
     *i = u - U12b_start;
     
@@ -256,9 +256,9 @@ int bytes_from_u1_u2(wchar_t u1, wchar_t u2, uint8_t **buffer, size_t *bufferSiz
     int u2_in_U8b = is_in_U08b(u2);
     
     if(u1_in_U12b && u2_in_U12b) {
-        
+
         *buffer = (uint8_t *)malloc(3 * sizeof(uint8_t));
-        if(buffer == NULL) {
+        if(*buffer == NULL) {
             fprintf(stderr, "-- malloc error\n");
             return EXIT_FAILURE;
         }
@@ -311,9 +311,9 @@ int bytes_from_u1_u2(wchar_t u1, wchar_t u2, uint8_t **buffer, size_t *bufferSiz
         
         return EXIT_SUCCESS;
     } else if (u1_in_U8b && u2 == '\n') {
-        
+
         *buffer = (uint8_t *)malloc(1 * sizeof(uint8_t));
-        if(buffer == NULL) {
+        if(*buffer == NULL) {
             fprintf(stderr, "-- malloc error\n");
             return EXIT_FAILURE;
         }
@@ -467,52 +467,57 @@ int unibinary_encode_string(const char *src, wchar_t **dst, size_t wrap_length) 
     rewind(fd_in);
     
     // 2. open another temporary file to write the encoded string
-    
+
     FILE *fd_out = tmpfile();
-    if(fd_in == NULL) {
+    if(fd_out == NULL) {
         fclose(fd_in);
         return EXIT_FAILURE;
     }
-    
+
     int status = unibinary_encode(fd_in, fd_out, wrap_length);
     fclose(fd_in);
     
     if(status != 0) return EXIT_FAILURE;
     
     // 3. read the encoded string and fill *dst
-    
+
+    fflush(fd_out);
     long file_size = ftell(fd_out);
-    
+
     rewind(fd_out);
-    
+
     long max_wchar_bytes_possible = file_size * MB_CUR_MAX;
-    
+
     if(max_wchar_bytes_possible > INTMAX_MAX) {
         fclose(fd_out);
         return EXIT_FAILURE;
     }
-    
+
     char *map = mmap(0, file_size, PROT_READ, MAP_SHARED, fileno(fd_out), 0);
 
     fclose(fd_out);
 
-    if(map == NULL) {
+    if(map == MAP_FAILED) {
         return EXIT_FAILURE;
     }
-    
-    *dst = (wchar_t *)malloc(file_size * MB_CUR_MAX);
-    if(dst == NULL) {
-        fprintf(stderr, "-- malloc error\n");
-        return EXIT_FAILURE;
-    }
-    
-    size_t length = mbstowcs(*dst, map, file_size * MB_CUR_MAX);
 
-    if(length == -1) {
-        free(dst);
+    size_t max_wchars = (size_t)file_size + 1;
+    *dst = (wchar_t *)malloc(max_wchars * sizeof(wchar_t));
+    if(*dst == NULL) {
+        fprintf(stderr, "-- malloc error\n");
+        munmap(map, file_size);
         return EXIT_FAILURE;
     }
-    
+
+    size_t length = mbstowcs(*dst, map, max_wchars);
+    munmap(map, file_size);
+
+    if(length == (size_t)-1) {
+        free(*dst);
+        *dst = NULL;
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -524,7 +529,7 @@ int unibinary_decode_string(const wchar_t *src, char **dst, long *dst_len) {
     if(fd_in == NULL) return EXIT_FAILURE;
     
     int status = fputws(src, fd_in);
-    if(status != 0) {
+    if(status < 0) {
         fclose(fd_in);
         return EXIT_FAILURE;
     }
@@ -532,29 +537,31 @@ int unibinary_decode_string(const wchar_t *src, char **dst, long *dst_len) {
     rewind(fd_in);
     
     // 2. open another temporary file to write decoded data
-    
+
     FILE *fd_out = tmpfile();
-    if(fd_in == NULL) {
+    if(fd_out == NULL) {
         fclose(fd_in);
         return EXIT_FAILURE;
     }
-    
+
     int status2 = unibinary_decode(fd_in, fd_out);
     fclose(fd_in);
     
     if(status2 != 0) return EXIT_FAILURE;
     
     // 3. read the resulting string and fill **dst
-    
+
+    fflush(fd_out);
     long file_size = ftell(fd_out);
-    
+
     *dst_len = file_size;
-    
+
     rewind(fd_out);
-    
+
     *dst = (char *)malloc(file_size * sizeof(char));
-    if(dst == NULL) {
+    if(*dst == NULL) {
         fprintf(stderr, "-- malloc error\n");
+        fclose(fd_out);
         return EXIT_FAILURE;
     }
     
