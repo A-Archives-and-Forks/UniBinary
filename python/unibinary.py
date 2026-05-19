@@ -79,7 +79,7 @@ def unichr_12a_from_two_ascii(a1, a2):
 
 
 def unichr_08_from_int(i):
-    if i > (U8_start + U8_length):
+    if i >= U8_length:
         print("-- unichr_08_from_int: 0x%x" % i)
         raise ValueError
 
@@ -87,7 +87,7 @@ def unichr_08_from_int(i):
 
 
 def unichr_12_from_int(i):
-    if i > (U12b_start + U12b_length):
+    if i >= U12b_length:
         print("-- unichr_12_from_int: 0x%x" % i)
         raise ValueError
 
@@ -97,7 +97,7 @@ def unichr_12_from_int(i):
 def int_from_u08b(u):
     i = ord(u)
 
-    if i < U8_start or i > (U8_start + U8_length):
+    if i < U8_start or i >= (U8_start + U8_length):
         print("-- int_from_u08b: %s" % u)
         raise ValueError
 
@@ -137,7 +137,7 @@ def two_bytes_from_u12a(u):
 def int_from_u12b(u):
     i = ord(u)
 
-    if i < U12b_start or i > (U12b_start + U12b_length):
+    if i < U12b_start or i >= (U12b_start + U12b_length):
         print("-- int_from_u12b: %s" % u)
         raise ValueError
 
